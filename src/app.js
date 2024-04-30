@@ -18,9 +18,7 @@ hbs.registerPartials(partialsPath);
 
 
 app.get("/", (req,res)=>{
-    res.render("index", {
-        title: "Weather App"
-    });
+    res.render("index");
 });
 
 
@@ -33,15 +31,17 @@ app.get("/weather", (req,res)=>{
         });
     }
 
-    weatherData(address, (error, {temperature, description, cityName} = {})=>{
+    weatherData(address, (error, {main, temperature, description, humidity, windSpeed} = {})=>{
         if(error){
             return res.send({error});
         }
-        console.log(temperature, description, cityName);
+        console.log(main, temperature, description, humidity, windSpeed);
         res.send({
+            main,
             temperature,
             description,
-            cityName
+            humidity,
+            windSpeed
         });
     });
 });
@@ -54,6 +54,6 @@ app.get("*", (req,res)=>{
 });
 
 
-app.listen(port, (req,res)=>{
+app.listen(port, ()=>{
     console.log(`Server is listening on port ${port}`);
 });

@@ -3,8 +3,6 @@ const constants = require("../config");
 
 const weatherData = (address, callback) => {
     const url = constants.openWeatherApi.BASE_URL + encodeURIComponent(address) + "&appid=" + constants.openWeatherApi.SECRET_KEY;
-    // console.log(url);
-    // callback("url is working i guess");
 
     request({url, json:true}, (error, {body})=>{
         if(error){
@@ -15,9 +13,11 @@ const weatherData = (address, callback) => {
         }
         else{
             callback(undefined, {
+                main: body.weather[0].main,
                 temperature: body.main.temp,
                 description: body.weather[0].description,
-                cityName: body.name
+                humidity: body.main.humidity,
+                windSpeed: body.wind.speed
             });
         }
     });

@@ -1,42 +1,67 @@
 var fetchWeather = "/weather";
+const inputBox = document.querySelector('.input-box');
+const searchBtn = document.getElementById('weatherForm');
+const weather_img = document.querySelector('.weather-img');
+const temperature = document.querySelector('.temperature');
+const description = document.querySelector('.description');
+const humidity = document.getElementById('humidity');
+const wind_speed = document.getElementById('wind-speed');
 
-const weatherForm = document.querySelector("form");
-const search = document.querySelector("input");
+const location_not_found = document.querySelector('.location-not-found');
 
-const weatherIcon = document.querySelector(".weatherIcon i");
+const heading = document.getElementById("heading");
+const wimg = document.getElementById("wimg");
 
-const weatherCondition = document.querySelector(".weatherCondition");
-const tempElement = document.querySelector(".temperature span");
-const locationElement = document.querySelector(".place");
+const weather_body = document.querySelector('.weather-body');
 
-const dateElement = document.querySelector(".date");
-
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-
-dateElement.textContent = new Date().getDate() + ", " + monthNames[new Date().getMonth()].substring(0,3); 
-
-weatherForm.addEventListener("submit", (event)=>{
+searchBtn.addEventListener("submit", (event)=>{
     event.preventDefault();
+   
+    location_not_found.style.display = "flex";
+    heading.textContent = "LOADING!!";
+    wimg.style.display = "none";
 
-    weatherCondition.textContent = "";
-    tempElement.textContent = "";
-    locationElement.textContent = "Loading....";
-
-    const locationAPI = fetchWeather + "?address=" + search.value;
+    const locationAPI = fetchWeather + "?address=" + inputBox.value;
     
     fetch(locationAPI).then((response)=>{
         return response.json();
     }).then((data)=>{
         if(data.error){
-            weatherCondition.textContent = "";
-            tempElement.textContent = "";
-            locationElement.textContent = data.error;
+            location_not_found.style.display = "flex";
+            heading.textContent = data.error;
+            wimg.style.display = "block"
+            weather_body.style.display = "none";
+            console.log(data.error);
         }
         else{
-            weatherCondition.textContent = data.description.toUpperCase();
-            tempElement.textContent = (data.temperature - 273.5).toFixed(2) + String.fromCharCode(176);
-            locationElement.textContent = data.cityName;
+            console.log("run");
+            location_not_found.style.display = "none";
+            weather_body.style.display = "flex";
+            temperature.innerHTML = `${Math.round(data.temperature - 273.15)}°C`;
+            description.innerHTML = `${data.description}`;
+        
+            humidity.innerHTML = `${data.humidity}%`;
+            wind_speed.innerHTML = `${data.windSpeed}Km/H`;
+            
+            switch(data.main){
+                case 'Clouds':
+                    weather_img.setAttribute("src", "/assets/cloud.png");
+                    break;
+                case 'Clear':
+                    weather_img.setAttribute("src", "/assets/clear.png");
+                    break;
+                case 'Rain':
+                    weather_img.setAttribute("src", "/assets/rain.png");
+                    break;
+                case 'Mist':
+                    weather_img.setAttribute("src", "/assets/mist.png");
+                    break;
+                case 'Snow':
+                    weather_img.setAttribute("src", "/assets/snow.png");
+                    break;
+        
+            }
+        
         }
     })
 })
